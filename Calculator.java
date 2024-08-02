@@ -1,121 +1,122 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.Math;
-import java.util.Arrays;
 import java.util.Stack;
 import javax.swing.*;
 
 class EvaluateString {
-  public static double evaluate(String expression) {
-    char[] tokens = expression.toCharArray();
-     // Stack for numbers: 'values'
-    Stack<Double> values = new Stack<Double>();
-    // Stack for Operators: 'ops'
-    Stack<Character> ops = new Stack<Character>();
+	public double evaluate(String expression) {
+		char[] tokens = expression.toCharArray();
+		// Stack for numbers: 'values'
+		Stack<Double> values = new Stack<Double>();
+		// Stack for Operators: 'ops'
+		Stack<Character> ops = new Stack<Character>();
 
-    for (int i = 0; i < tokens.length; i++) {
-      // Current token is a
-      // whitespace, skip it
-      if (tokens[i] == ' ') {
+		for (int i = 0; i < tokens.length; i++) {
+			// Current token is a
+			// whitespace, skip it
+			if (tokens[i] == ' ') {
 				continue;
 			}
-      // Current token is a number,
-      // push it to stack for numbers
-      if (((tokens[i] >= '0' && tokens[i] <= '9') || tokens[i] == '.')) {
-        StringBuffer sbuf = new StringBuffer();
+			// Current token is a number,
+			// push it to stack for numbers
+			if (((tokens[i] >= '0' && tokens[i] <= '9') || tokens[i] == '.')) {
+				StringBuffer sbuf = new StringBuffer();
 
-        // There may be more than one digits in number
-        while (i < tokens.length && ((tokens[i] >= '0' &&
-                          						tokens[i] <= '9') ||
-																			tokens[i] == '.')) {
+				// There may be more than one digits in number
+				while (i < tokens.length && ((tokens[i] >= '0' &&
+						tokens[i] <= '9') ||
+						tokens[i] == '.')) {
 					sbuf.append(tokens[i++]);
 				}
-        values.push(Double.parseDouble(sbuf.toString()));
+				values.push(Double.parseDouble(sbuf.toString()));
 
-        /* right now the i points to the character next to the digit, since the
-				for loop also increases the i, we would skip one token position;
-				we need to decrease the value of i by 1 to correct the offset. */
-        i--;
-      }
-      // Current token is an opening brace,
-      // push it to 'ops'
-      else if (tokens[i] == '(') {
+				/*
+				 * right now the i points to the character next to the digit, since the
+				 * for loop also increases the i, we would skip one token position;
+				 * we need to decrease the value of i by 1 to correct the offset.
+				 */
+				i--;
+			}
+			// Current token is an opening brace,
+			// push it to 'ops'
+			else if (tokens[i] == '(') {
 				ops.push(tokens[i]);
 			}
-      // Closing brace encountered,
-      // solve entire brace
-      else if (tokens[i] == ')') {
-        while (ops.peek() != '(')
-          values.push(applyOp(ops.pop(),values.pop(),values.pop()));
-        ops.pop();
-      }
+			// Closing brace encountered,
+			// solve entire brace
+			else if (tokens[i] == ')') {
+				while (ops.peek() != '(')
+					values.push(applyOp(ops.pop(), values.pop(), values.pop()));
+				ops.pop();
+			}
 
-      // Current token is an operator.
-      else if ( tokens[i] == '+' ||
-              	tokens[i] == '-' ||
-              	tokens[i] == '*' ||
-              	tokens[i] == '/') {
-        // While top of 'ops' has same
-        // or greater precedence to current
-        // token, which is an operator.
-        // Apply operator on top of 'ops'
-        // to top two elements in values stack
-        while (!ops.empty() &&
-               hasPrecedence(tokens[i],
-                            ops.peek()))
-          values.push(applyOp(ops.pop(),
-                           values.pop(),
-                         values.pop()));
+			// Current token is an operator.
+			else if (tokens[i] == '+' ||
+					tokens[i] == '-' ||
+					tokens[i] == '*' ||
+					tokens[i] == '/') {
+				// While top of 'ops' has same
+				// or greater precedence to current
+				// token, which is an operator.
+				// Apply operator on top of 'ops'
+				// to top two elements in values stack
+				while (!ops.empty() &&
+						hasPrecedence(tokens[i],
+								ops.peek()))
+					values.push(applyOp(ops.pop(),
+							values.pop(),
+							values.pop()));
 
-        // Push current token to 'ops'.
-        ops.push(tokens[i]);
-      }
-    }
+				// Push current token to 'ops'.
+				ops.push(tokens[i]);
+			}
+		}
 
-    // Entire expression has been
-    // parsed at this point, apply remaining
-    // ops to remaining values
-    while (!ops.empty())
-        values.push(applyOp(ops.pop(),
-                         values.pop(),
-                       values.pop()));
+		// Entire expression has been
+		// parsed at this point, apply remaining
+		// ops to remaining values
+		while (!ops.empty())
+			values.push(applyOp(ops.pop(),
+					values.pop(),
+					values.pop()));
 
-    // Top of 'values' contains
-    // result, return it
-    return values.pop();
-  }
+		// Top of 'values' contains
+		// result, return it
+		return values.pop();
+	}
 
-  // Returns true if 'op2' has higher
-  // or same precedence as 'op1',
-  // otherwise returns false.
-  public static boolean hasPrecedence(char op1, char op2) {
-    if (op2 == '(' || op2 == ')')
-      return false;
-    if ((op1 == '*' || op1 == '/') && (op2 == '+' || op2 == '-'))
-      return false;
-    else
-      return true;
-  }
+	// Returns true if 'op2' has higher
+	// or same precedence as 'op1',
+	// otherwise returns false.
+	public static boolean hasPrecedence(char op1, char op2) {
+		if (op2 == '(' || op2 == ')')
+			return false;
+		if ((op1 == '*' || op1 == '/') && (op2 == '+' || op2 == '-'))
+			return false;
+		else
+			return true;
+	}
 
-  // A utility method to apply an
-  // operator 'op' on operands 'a'
-  // and 'b'. Return the result.
-  public static double applyOp(char op, double b, double a) {
-    switch (op) {
-		  case '+':
-		    return a + b;
-		  case '-':
-		    return a - b;
-		  case '*':
-		    return a * b;
-		  case '/':
-	      if (b == 0) {
+	// A utility method to apply an
+	// operator 'op' on operands 'a'
+	// and 'b'. Return the result.
+	public static double applyOp(char op, double b, double a) {
+		switch (op) {
+			case '+':
+				return a + b;
+			case '-':
+				return a - b;
+			case '*':
+				return a * b;
+			case '/':
+				if (b == 0) {
 					throw new UnsupportedOperationException("Cannot divide by zero");
 				}
-		    return a / b;
-    }
-    return 0;
-  }
+				return a / b;
+		}
+		return 0;
+	}
 }
 
 public class Calculator extends JFrame implements ActionListener {
@@ -244,7 +245,7 @@ public class Calculator extends JFrame implements ActionListener {
 	}
 
 	public void clearZero() {
-		if(textField.getText().equals("0")) {
+		if (textField.getText().equals("0")) {
 			textField.setText("");
 		}
 	}
@@ -258,7 +259,7 @@ public class Calculator extends JFrame implements ActionListener {
 		return true;
 	}
 
-	public void actionPerformed (ActionEvent event) {
+	public void actionPerformed(ActionEvent event) {
 		if (event.getSource() == zero) {
 			clearZero();
 			textField.setText(textField.getText() + "0");
@@ -300,32 +301,32 @@ public class Calculator extends JFrame implements ActionListener {
 		} else if (event.getSource() == multiply) {
 			textField.setText(textField.getText() + "*");
 		} else if (event.getSource() == plusMinus) {
-			if(textField.getText().charAt(0) != '-') {
+			if (textField.getText().charAt(0) != '-') {
 				textField.setText("-" + textField.getText());
 			} else {
 				String str = textField.getText();
 				textField.setText(str.substring(1, str.length()));
 			}
 		} else if (event.getSource() == CE || event.getSource() == backspace) {
-			if(textField.getText().length() == 1) {
+			if (textField.getText().length() == 1) {
 				textField.setText("0");
 			} else {
 				String str = textField.getText();
-				textField.setText(str.substring(0,str.length()-1));
+				textField.setText(str.substring(0, str.length() - 1));
 			}
-		} else if (event.getSource() == C ) {
+		} else if (event.getSource() == C) {
 			textField.setText("0");
-		} else if (event.getSource() == onex ) {
+		} else if (event.getSource() == onex) {
 			String expression = textField.getText();
-			if(isNumber(expression)) {
+			if (isNumber(expression)) {
 				double x = Double.parseDouble(expression);
-				textField.setText(Double.toString(1.0/x));
+				textField.setText(Double.toString(1.0 / x));
 			} else {
 				textField.setText("ERROR - PRESS C");
 			}
 		} else if (event.getSource() == squareRoot) {
 			String expression = textField.getText();
-			if(isNumber(expression)) {
+			if (isNumber(expression)) {
 				double x = Double.parseDouble(expression);
 				textField.setText(Double.toString(Math.sqrt(x)));
 			} else {
@@ -333,22 +334,22 @@ public class Calculator extends JFrame implements ActionListener {
 			}
 		} else if (event.getSource() == percentage) {
 			String expression = textField.getText();
-			if(isNumber(expression)) {
+			if (isNumber(expression)) {
 				double x = Double.parseDouble(expression);
-				textField.setText(Double.toString(x/100));
+				textField.setText(Double.toString(x / 100));
 			} else {
 				textField.setText("ERROR - PRESS C");
 			}
 		} else if (event.getSource() == equals) {
 			String expression = textField.getText();
 
-			if(isNumber(expression)) {
+			if (isNumber(expression)) {
 				textField.setText(expression);
 			} else {
 				EvaluateString evstr = new EvaluateString();
 				double d = evstr.evaluate(expression);
 				if ((d % 1) == 0) {
-					int t = (int)d;
+					int t = (int) d;
 					expression = Integer.toString(t);
 				} else {
 					expression = Double.toString(d);
@@ -368,21 +369,21 @@ public class Calculator extends JFrame implements ActionListener {
 			textField.setText(expression);
 		} else if (event.getSource() == MS) {
 			String expression = textField.getText();
-			if(isNumber(expression)) {
+			if (isNumber(expression)) {
 				memory = Double.parseDouble(expression);
 			} else {
 				textField.setText("ERROR - PRESS C");
 			}
 		} else if (event.getSource() == mPlus) {
 			String expression = textField.getText();
-			if(isNumber(expression)) {
+			if (isNumber(expression)) {
 				memory += Double.parseDouble(expression);
 			} else {
 				textField.setText("ERROR - PRESS C");
 			}
 		} else if (event.getSource() == mMinus) {
 			String expression = textField.getText();
-			if(isNumber(expression)) {
+			if (isNumber(expression)) {
 				memory -= Double.parseDouble(expression);
 			} else {
 				textField.setText("ERROR - PRESS C");

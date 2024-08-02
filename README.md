@@ -1,15 +1,16 @@
-# 🔢 Calculator Applet using Swing in Java
+<h1 align="center">🧮Calculator Applet🧮</h1>
+<p align="center">A simple calculator applet made using Java Swing.</p>
+<hr style="width:25%; margin: 1rem auto;">
+
+<img src="https://user-images.githubusercontent.com/82528318/142895623-fec5b807-4b5d-4948-9987-d12b471738ed.png" alt="Calculator Applet" style="display: block; margin: 0 auto;">
 
 ## Why
 
-The college I am studying at has a Java course, which teaches about Java applets and Java swing features. Although deprecated, those frameworks were fun to fiddle around with
-and helped understand how event listeners and handlers worked. 
+The college I am studying at has a Java course, which teaches about Java applets and Java swing features. Although deprecated, those frameworks were fun to fiddle around with and helped understand how event listeners and handlers worked. 
 
 ## How to run
 
-[Run this repl!](https://replit.com/@TheBrahmnicBoy/Calculator#.replit) 👈
-
-You'll have to wait a while!
+Run `main.sh` to compile and run the applet. Make sure you have the JDK installed.
 
 ### Functions 
 
@@ -24,8 +25,6 @@ You'll have to wait a while!
 - "MR" is memory recall. It fills the display with the contents of the memory.
 - "MS" is memory save. It saves the number on the display into the memory.
 - "M+" and "M-" add/subtract the number in diplay from memory.
-
-![image](https://user-images.githubusercontent.com/82528318/142895623-fec5b807-4b5d-4948-9987-d12b471738ed.png)
 
 ## Courtesy
 
